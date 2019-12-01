@@ -56,7 +56,7 @@ const Game = (playground) => {
     const dropAmount = config.rainIntensity * 200
     state.rainDrops = []
     for (let i = 0; i < dropAmount; i++) {
-      const size = _.random(1, 3)
+      const size = _.random(1, config.rainIntensity * 3)
       state.rainDrops.push({
         x: _.random(-100, config.width),
         y: _.random(-100, config.height),
