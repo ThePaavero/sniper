@@ -67,6 +67,10 @@ const Game = (playground) => {
     const x = state.city.x * sizeMultiplier
     const y = state.city.y * sizeMultiplier
     playground.layer.drawImage(playground.images.city, x, y, state.city.width * sizeMultiplier, state.city.height * sizeMultiplier)
+
+    // Draw "vignette".
+    playground.layer.drawImage(playground.images.vignette, 0, 0, config.width, config.height)
+    // ...
   }
 
   const fire = () => {
