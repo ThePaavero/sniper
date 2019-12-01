@@ -203,8 +203,19 @@ const Game = (playground) => {
   }
 
   const onMouseMove = (data) => {
-    state.world.x = data.x * -1
-    state.world.y = data.y * -1
+    state.world.x = (data.x * -1) - (data.x - centers.x)
+    state.world.y = (data.y * -1) - (data.y - centers.y)
+  }
+
+  const onMouseDown = (data) => {
+    switch (data.button) {
+      case 'left':
+        fire()
+        break
+      case 'right':
+        toggleZoom()
+        break
+    }
   }
 
   const onKeyDown = (data) => {
@@ -257,6 +268,7 @@ const Game = (playground) => {
     playground.keyup = onKeyUp
     playground.keydown = onKeyDown
     playground.mousemove = onMouseMove
+    playground.mousedown = onMouseDown
 
     playground.gamepaddown = function(data) {
       if (Number(data.button) === 1) {
