@@ -18,6 +18,7 @@ const Game = (playground) => {
   const onReady = () => {
     centerCity()
     createWindows()
+    createRain()
   }
 
   const toScale = (value) => {
@@ -42,10 +43,27 @@ const Game = (playground) => {
     state.city.x += state.city.velocities.x
     state.city.y += state.city.velocities.y
     updateDebugView()
+    if (config.rainIntensity > 0) {
+      updateRainDrops()
+    }
   }
 
   const createWindows = () => {
     state.windows = _.cloneDeep(windows)
+  }
+
+  const createRain = () => {
+    const dropAmount = config.rainIntensity * 100
+    state.rainDrops = []
+    for (let i = 0; i < dropAmount; i++) {
+      const size = _.random(1, 6)
+      state.rainDrops.push({
+        x: _.random(-100, config.width),
+        y: _.random(-100, config.height),
+        width: size,
+        height: _.random(4 * config.rainIntensity * size, 6 * config.rainIntensity * size),
+      })
+    }
   }
 
   const updateDebugView = () => {
@@ -59,6 +77,10 @@ const Game = (playground) => {
     }
   }
 
+  const updateRainDrops = () => {
+    // ...
+  }
+
   const centerCity = () => {
     state.city.x = centers.x - state.city.width / 2
     state.city.y = centers.y - state.city.height / 2
@@ -67,7 +89,6 @@ const Game = (playground) => {
   const draw = () => {
     // Clear frame.
     playground.layer.clear('#000')
-
     // Draw background city.
     const sizeMultiplier = state.zoom === 'out' ? 1 : 2
     const x = state.city.x * sizeMultiplier
@@ -87,8 +108,23 @@ const Game = (playground) => {
       playground.layer.fillRect(x, y, width, height);
     })
 
+    // Rain!
+    drawRainDrops()
+
     // Draw player/gun/sight.
     playground.layer.drawImage(playground.images.sightLarger, 0, 0, config.width, config.height)
+  }
+
+  const drawRainDrops = () => {
+    const ctx = playground.layer
+    ctx.strokeStyle('rgba(0, 0, 0, 0.5)')
+    state.rainDrops.forEach(drop => {
+      ctx.lineWidth(drop.width)
+      ctx.beginPath()
+      ctx.moveTo(drop.x, drop.y)
+      ctx.lineTo(drop.x + 10, drop.y + drop.height)
+      ctx.stroke()
+    })
   }
 
   const fire = () => {
@@ -214,10 +250,11 @@ const Game = (playground) => {
       const stick = data.sticks[0]
 
       // "Dead zone"...
-      if (Math.abs(stick.x) < 0.2) {
+      const deadZoneThreshold = 0.1
+      if (Math.abs(stick.x) < deadZoneThreshold) {
         stick.x = 0
       }
-      if (Math.abs(stick.y) < 0.2) {
+      if (Math.abs(stick.y) < deadZoneThreshold) {
         stick.y = 0
       }
 
