@@ -31,6 +31,7 @@ const Game = (playground) => {
 
   const toggleZoom = () => {
     state.zoom = state.zoom === 'in' ? 'out' : 'in'
+    resetRain()
   }
 
   const preloadAssets = () => {
@@ -52,11 +53,22 @@ const Game = (playground) => {
     state.windows = _.cloneDeep(windows)
   }
 
+  const resetRain = () => {
+    state.rainDrops.length = 0
+    createRain()
+  }
+
   const createRain = () => {
     const dropAmount = config.rainIntensity * 200
     state.rainDrops = []
     for (let i = 0; i < dropAmount; i++) {
-      const size = _.random(1, config.rainIntensity * 3)
+      let size = _.random(1, config.rainIntensity * 3)
+
+      // Some drops should be surprisingly near.
+      if (_.random(0, 10) === 0) {
+        size = _.random(3, config.rainIntensity * 5)
+      }
+
       state.rainDrops.push({
         x: _.random(-100, config.width),
         y: _.random(-100, config.height),
@@ -84,7 +96,7 @@ const Game = (playground) => {
     }
 
     state.rainDrops.forEach(drop => {
-      drop.y += (config.rainIntensity * drop.width) * 5
+      drop.y += (config.rainIntensity * drop.width) * 4
       drop.x += config.rainIntensity
       if (drop.y > config.height) {
         drop.y = _.random(-100, -200)
