@@ -1,7 +1,6 @@
 import state from './state'
 import imagesArray from './images'
 import config from './config'
-import windows from './windows'
 import DebugView from './lib/DebugView'
 import _ from 'lodash'
 
@@ -16,8 +15,7 @@ const Game = (playground) => {
   let debugTickCounter = 0
 
   const onReady = () => {
-    centerCity()
-    createWindows()
+    centerView()
     createRain()
   }
 
@@ -41,16 +39,12 @@ const Game = (playground) => {
   }
 
   const updateState = () => {
-    state.city.x += state.city.velocities.x
-    state.city.y += state.city.velocities.y
+    state.world.x += state.world.velocities.x
+    state.world.y += state.world.velocities.y
     updateDebugView()
     if (config.rainIntensity > 0) {
       updateRainDrops()
     }
-  }
-
-  const createWindows = () => {
-    state.windows = _.cloneDeep(windows)
   }
 
   const resetRain = () => {
@@ -107,33 +101,23 @@ const Game = (playground) => {
     })
   }
 
-  const centerCity = () => {
-    state.city.x = centers.x - state.city.width / 2
-    state.city.y = centers.y - state.city.height / 2
+  const centerView = () => {
+    state.world.x = centers.x - state.world.width / 2
+    state.world.y = centers.y - state.world.height / 2
   }
 
   const draw = () => {
     // Clear frame.
     playground.layer.clear('#000')
 
-    // Draw background city.
+    // Draw world.
     const sizeMultiplier = state.zoom === 'out' ? 1 : 2
-    const x = state.city.x * sizeMultiplier
-    const y = state.city.y * sizeMultiplier
-    playground.layer.drawImage(playground.images.city, x, y, state.city.width * sizeMultiplier, state.city.height * sizeMultiplier)
+    const x = state.world.x * sizeMultiplier
+    const y = state.world.y * sizeMultiplier
+    playground.layer.drawImage(playground.images.map1, x, y, state.world.width * sizeMultiplier, state.world.height * sizeMultiplier)
 
     // Draw "vignette".
     playground.layer.drawImage(playground.images.vignette, 0, 0, config.width, config.height)
-
-    // Draw windows.
-    state.windows.forEach(window => {
-      playground.layer.fillStyle(window.lightsOn ? '#f4e6b7' : '#313131');
-      const x = (window.x + state.city.x) * sizeMultiplier
-      const y = (window.y + state.city.y) * sizeMultiplier
-      const width = window.width * sizeMultiplier
-      const height = window.height * sizeMultiplier
-      playground.layer.fillRect(x, y, width, height);
-    })
 
     // Rain!
     drawRainDrops()
@@ -157,15 +141,15 @@ const Game = (playground) => {
   const applyRecoil = () => {
     const powerMultiplier = toScaleWithZoom(1)
     const originals = {
-      x: state.city.x,
-      y: state.city.y,
+      x: state.world.x,
+      y: state.world.y,
     }
     const recoilPower = _.random(100, 130) * powerMultiplier
     playground
-      .tween(state.city)
+      .tween(state.world)
       .to({
-        y: state.city.y + recoilPower,
-        x: state.city.x + _.random(-30 * powerMultiplier, 30 * powerMultiplier)
+        y: state.world.y + recoilPower,
+        x: state.world.x + _.random(-30 * powerMultiplier, 30 * powerMultiplier)
       }, 0.02, 'outExpo')
       .to({
         y: originals.y
@@ -177,42 +161,42 @@ const Game = (playground) => {
     // @todo
   }
 
-  const moveCity = (dir, startStop = 'start') => {
+  const moveWorld = (dir, startStop = 'start') => {
     switch (dir) {
       case 'left':
         if (startStop === 'start') {
-          state.city.velocities.x -= state.city.speed
+          state.world.velocities.x -= state.world.speed
           return
         }
-        if (state.city.velocities.x < 0) {
-          state.city.velocities.x = 0
+        if (state.world.velocities.x < 0) {
+          state.world.velocities.x = 0
         }
         break
       case 'right':
         if (startStop === 'start') {
-          state.city.velocities.x += state.city.speed
+          state.world.velocities.x += state.world.speed
           return
         }
-        if (state.city.velocities.x > 0) {
-          state.city.velocities.x = 0
+        if (state.world.velocities.x > 0) {
+          state.world.velocities.x = 0
         }
         break
       case 'up':
         if (startStop === 'start') {
-          state.city.velocities.y -= state.city.speed
+          state.world.velocities.y -= state.world.speed
           return
         }
-        if (state.city.velocities.y < 0) {
-          state.city.velocities.y = 0
+        if (state.world.velocities.y < 0) {
+          state.world.velocities.y = 0
         }
         break
       case 'down':
         if (startStop === 'start') {
-          state.city.velocities.y += state.city.speed
+          state.world.velocities.y += state.world.speed
           return
         }
-        if (state.city.velocities.y > 0) {
-          state.city.velocities.y = 0
+        if (state.world.velocities.y > 0) {
+          state.world.velocities.y = 0
         }
         break
     }
@@ -221,16 +205,16 @@ const Game = (playground) => {
   const onKeyDown = (data) => {
     switch (data.key) {
       case 'left':
-        moveCity('right', 'start')
+        moveWorld('right', 'start')
         break
       case 'right':
-        moveCity('left', 'start')
+        moveWorld('left', 'start')
         break
       case 'up':
-        moveCity('down', 'start')
+        moveWorld('down', 'start')
         break
       case 'down':
-        moveCity('up', 'start')
+        moveWorld('up', 'start')
         break
     }
   }
@@ -238,16 +222,16 @@ const Game = (playground) => {
   const onKeyUp = (data) => {
     switch (data.key) {
       case 'left':
-        moveCity('right', 'stop')
+        moveWorld('right', 'stop')
         break
       case 'right':
-        moveCity('left', 'stop')
+        moveWorld('left', 'stop')
         break
       case 'up':
-        moveCity('down', 'stop')
+        moveWorld('down', 'stop')
         break
       case 'down':
-        moveCity('up', 'stop')
+        moveWorld('up', 'stop')
         break
       case 'space':
       case 'enter':
@@ -290,8 +274,8 @@ const Game = (playground) => {
         stick.y = 0
       }
 
-      state.city.velocities.x = (stick.x * 10) * -1
-      state.city.velocities.y = (stick.y * 10) * -1
+      state.world.velocities.x = (stick.x * 10) * -1
+      state.world.velocities.y = (stick.y * 10) * -1
     }
   }
 

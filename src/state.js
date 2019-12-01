@@ -3,7 +3,7 @@
  */
 export default {
   zoom: 'out',
-  city: {
+  world: {
     x: 0,
     y: 0,
     width: 4000,
@@ -14,5 +14,4 @@ export default {
       y: 0,
     },
   },
-  windows: [],
 }
