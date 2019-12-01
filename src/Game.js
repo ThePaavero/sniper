@@ -88,7 +88,21 @@ const Game = (playground) => {
   }
 
   const fire = () => {
-    console.log('*FIRING*')
+    const powerMultiplier = state.zoom === 'out' ? 1 : 2
+    const originals = {
+      x: state.city.x,
+      y: state.city.y,
+    }
+    const recoilPower = _.random(100, 130) * powerMultiplier
+    playground
+      .tween(state.city)
+      .to({
+        y: state.city.y + recoilPower,
+        x: state.city.x + _.random(-30 * powerMultiplier, 30 * powerMultiplier)
+      }, 0.02, 'outExpo')
+      .to({
+        y: originals.y
+      }, 1, 'outExpo')
   }
 
   const moveCity = (dir, startStop = 'start') => {
