@@ -1,9 +1,23 @@
 [
   {
-    "x": 534,
-    "y": 1113,
+    "x": 2006,
+    "y": 942,
     "width": 50,
     "height": 70,
     "lightsOn": true
+  },
+  {
+    "x": 2106,
+    "y": 942,
+    "width": 50,
+    "height": 70,
+    "lightsOn": true
+  },
+  {
+    "x": 2206,
+    "y": 942,
+    "width": 50,
+    "height": 70,
+    "lightsOn": false
   }
 ]

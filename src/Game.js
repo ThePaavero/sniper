@@ -75,13 +75,16 @@ const Game = (playground) => {
 
     // Draw windows.
     state.windows.forEach(window => {
-      playground.layer.fillStyle(window.lightsOn ? '#f4e6b7' : '#585858');
+      playground.layer.fillStyle(window.lightsOn ? '#f4e6b7' : '#313131');
       const x = (window.x + state.city.x) * sizeMultiplier
       const y = (window.y + state.city.y) * sizeMultiplier
       const width = window.width * sizeMultiplier
       const height = window.height * sizeMultiplier
       playground.layer.fillRect(x, y, width, height);
     })
+
+    // Draw player/gun/sight.
+    playground.layer.drawImage(playground.images.sightLarger, 0, 0, config.width, config.height)
   }
 
   const fire = () => {
