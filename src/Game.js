@@ -19,10 +19,6 @@ const Game = (playground) => {
     createRain()
   }
 
-  const toScale = (value) => {
-    return value * config.scale
-  }
-
   const toScaleWithZoom = (value) => {
     return value * state.zoom === 'out' ? 1 : 2
   }
