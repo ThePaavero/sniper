@@ -24,6 +24,10 @@ const Game = (playground) => {
     return value * config.scale
   }
 
+  const toScaleWithZoom = (value) => {
+    return value * state.zoom === 'out' ? 1 : 2
+  }
+
   const toggleZoom = () => {
     state.zoom = state.zoom === 'in' ? 'out' : 'in'
   }
@@ -88,7 +92,7 @@ const Game = (playground) => {
   }
 
   const fire = () => {
-    const powerMultiplier = state.zoom === 'out' ? 1 : 2
+    const powerMultiplier = toScaleWithZoom(1)
     const originals = {
       x: state.city.x,
       y: state.city.y,
@@ -208,6 +212,15 @@ const Game = (playground) => {
     }
     playground.gamepadmove = function(data) {
       const stick = data.sticks[0]
+
+      // "Dead zone"...
+      if (Math.abs(stick.x) < 0.2) {
+        stick.x = 0
+      }
+      if (Math.abs(stick.y) < 0.2) {
+        stick.y = 0
+      }
+
       state.city.velocities.x = (stick.x * 10) * -1
       state.city.velocities.y = (stick.y * 10) * -1
     }
