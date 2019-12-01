@@ -152,9 +152,22 @@ const Game = (playground) => {
       }, 1, 'outExpo')
   }
 
+  const getCrossHairCoordinates = () => {
+    return 'TODO'
+  }
+
+  const sendProjectile = () => {
+    return
+    /*const crossHairCoordinates = getCrossHairCoordinates()
+    state.projectiles.push({
+      x: crossHairCoordinates.x,
+      y: crossHairCoordinates.y,
+    })*/
+  }
+
   const fire = () => {
     applyRecoil()
-    // @todo
+    sendProjectile()
   }
 
   const moveWorld = (dir, startStop = 'start') => {

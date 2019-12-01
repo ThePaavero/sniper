@@ -14,4 +14,5 @@ export default {
       y: 0,
     },
   },
+  projectiles: []
 }
