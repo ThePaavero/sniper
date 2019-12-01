@@ -202,6 +202,11 @@ const Game = (playground) => {
     }
   }
 
+  const onMouseMove = (data) => {
+    state.world.x = data.x * -1
+    state.world.y = data.y * -1
+  }
+
   const onKeyDown = (data) => {
     switch (data.key) {
       case 'left':
@@ -251,6 +256,7 @@ const Game = (playground) => {
     playground.step = updateState
     playground.keyup = onKeyUp
     playground.keydown = onKeyDown
+    playground.mousemove = onMouseMove
 
     playground.gamepaddown = function(data) {
       if (Number(data.button) === 1) {
