@@ -1,7 +1,9 @@
 import state from './state'
 import imagesArray from './images'
 import config from './config'
+import windows from './windows'
 import DebugView from './lib/DebugView'
+import _ from 'lodash'
 
 const Game = (playground) => {
 
@@ -39,7 +41,7 @@ const Game = (playground) => {
   }
 
   const createWindows = () => {
-    console.log('Creating windows...')
+    state.windows = _.cloneDeep(windows)
   }
 
   const updateDebugView = () => {
@@ -70,7 +72,16 @@ const Game = (playground) => {
 
     // Draw "vignette".
     playground.layer.drawImage(playground.images.vignette, 0, 0, config.width, config.height)
-    // ...
+
+    // Draw windows.
+    state.windows.forEach(window => {
+      playground.layer.fillStyle(window.lightsOn ? '#f4e6b7' : '#585858');
+      const x = (window.x + state.city.x) * sizeMultiplier
+      const y = (window.y + state.city.y) * sizeMultiplier
+      const width = window.width * sizeMultiplier
+      const height = window.height * sizeMultiplier
+      playground.layer.fillRect(x, y, width, height);
+    })
   }
 
   const fire = () => {
