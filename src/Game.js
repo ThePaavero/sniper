@@ -53,10 +53,10 @@ const Game = (playground) => {
   }
 
   const createRain = () => {
-    const dropAmount = config.rainIntensity * 100
+    const dropAmount = config.rainIntensity * 350
     state.rainDrops = []
     for (let i = 0; i < dropAmount; i++) {
-      const size = _.random(1, 6)
+      const size = _.random(1, 3)
       state.rainDrops.push({
         x: _.random(-100, config.width),
         y: _.random(-100, config.height),
@@ -78,7 +78,19 @@ const Game = (playground) => {
   }
 
   const updateRainDrops = () => {
-    // ...
+    if (!state.rainDrops) {
+      return
+    }
+
+    state.rainDrops.forEach(drop => {
+      drop.y += (config.rainIntensity * drop.width) * 5
+      if (drop.y > config.height) {
+        drop.y = _.random(-100, -200)
+      }
+      if (drop.x > config.width) {
+        drop.x = _.random(-10, -30)
+      }
+    })
   }
 
   const centerCity = () => {
@@ -89,6 +101,7 @@ const Game = (playground) => {
   const draw = () => {
     // Clear frame.
     playground.layer.clear('#000')
+
     // Draw background city.
     const sizeMultiplier = state.zoom === 'out' ? 1 : 2
     const x = state.city.x * sizeMultiplier
@@ -122,12 +135,12 @@ const Game = (playground) => {
       ctx.lineWidth(drop.width)
       ctx.beginPath()
       ctx.moveTo(drop.x, drop.y)
-      ctx.lineTo(drop.x + 10, drop.y + drop.height)
+      ctx.lineTo(drop.x + config.rainIntensity, drop.y + drop.height)
       ctx.stroke()
     })
   }
 
-  const fire = () => {
+  const applyRecoil = () => {
     const powerMultiplier = toScaleWithZoom(1)
     const originals = {
       x: state.city.x,
@@ -143,6 +156,11 @@ const Game = (playground) => {
       .to({
         y: originals.y
       }, 1, 'outExpo')
+  }
+
+  const fire = () => {
+    applyRecoil()
+    // @todo
   }
 
   const moveCity = (dir, startStop = 'start') => {
