@@ -14,7 +14,16 @@ const Game = (playground) => {
   let debugTickCounter = 0
 
   const onReady = () => {
-    centerGun()
+    centerCity()
+    createWindows()
+  }
+
+  const toScale = (value) => {
+    return value * config.scale
+  }
+
+  const toggleZoom = () => {
+    state.zoom = state.zoom === 'in' ? 'out' : 'in'
   }
 
   const preloadAssets = () => {
@@ -29,6 +38,10 @@ const Game = (playground) => {
     updateDebugView()
   }
 
+  const createWindows = () => {
+    console.log('Creating windows...')
+  }
+
   const updateDebugView = () => {
     if (!config.debugState) {
       return
@@ -40,7 +53,7 @@ const Game = (playground) => {
     }
   }
 
-  const centerGun = () => {
+  const centerCity = () => {
     state.city.x = centers.x - state.city.width / 2
     state.city.y = centers.y - state.city.height / 2
   }
@@ -50,7 +63,14 @@ const Game = (playground) => {
     playground.layer.clear('#000')
 
     // Draw background city.
-    playground.layer.drawImage(playground.images.city, state.city.x, state.city.y, state.city.width, state.city.height)
+    const sizeMultiplier = state.zoom === 'out' ? 1 : 2
+    const x = state.city.x * sizeMultiplier
+    const y = state.city.y * sizeMultiplier
+    playground.layer.drawImage(playground.images.city, x, y, state.city.width * sizeMultiplier, state.city.height * sizeMultiplier)
+  }
+
+  const fire = () => {
+    console.log('*FIRING*')
   }
 
   const moveCity = (dir, startStop = 'start') => {
@@ -125,6 +145,13 @@ const Game = (playground) => {
       case 'down':
         moveCity('up', 'stop')
         break
+      case 'space':
+      case 'enter':
+        fire()
+        break
+      case 'ctrl':
+        toggleZoom()
+        break
     }
   }
 
@@ -138,20 +165,20 @@ const Game = (playground) => {
     playground.keydown = onKeyDown
 
     playground.gamepaddown = function(data) {
-      console.log('DOWN')
-      console.log(data)
-      console.log('--------')
+      if (Number(data.button) === 1) {
+        fire()
+      }
+      if (Number(data.button) === 2) {
+        toggleZoom()
+      }
     }
     playground.gamepadup = function(data) {
-      console.log('UP')
-      console.log(data)
-      console.log('--------')
     }
-    /*playground.gamepadmove = function(data) {
-      console.log('MOVE')
-      console.log(data)
-      console.log('--------')
-    }*/
+    playground.gamepadmove = function(data) {
+      const stick = data.sticks[0]
+      state.city.velocities.x = (stick.x * 10) * -1
+      state.city.velocities.y = (stick.y * 10) * -1
+    }
   }
 
   return {
