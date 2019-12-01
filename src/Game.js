@@ -53,7 +53,7 @@ const Game = (playground) => {
   }
 
   const createRain = () => {
-    const dropAmount = config.rainIntensity * 350
+    const dropAmount = config.rainIntensity * 200
     state.rainDrops = []
     for (let i = 0; i < dropAmount; i++) {
       const size = _.random(1, 3)
@@ -62,6 +62,7 @@ const Game = (playground) => {
         y: _.random(-100, config.height),
         width: size,
         height: _.random(4 * config.rainIntensity * size, 6 * config.rainIntensity * size),
+        alpha: 0.2,
       })
     }
   }
@@ -84,6 +85,7 @@ const Game = (playground) => {
 
     state.rainDrops.forEach(drop => {
       drop.y += (config.rainIntensity * drop.width) * 5
+      drop.x += config.rainIntensity
       if (drop.y > config.height) {
         drop.y = _.random(-100, -200)
       }
@@ -130,8 +132,8 @@ const Game = (playground) => {
 
   const drawRainDrops = () => {
     const ctx = playground.layer
-    ctx.strokeStyle('rgba(0, 0, 0, 0.5)')
     state.rainDrops.forEach(drop => {
+      ctx.strokeStyle('rgba(0, 0, 0, ' + drop.alpha + ')')
       ctx.lineWidth(drop.width)
       ctx.beginPath()
       ctx.moveTo(drop.x, drop.y)
